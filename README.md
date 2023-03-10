@@ -92,9 +92,17 @@ http://localhost:3000/api/account/getInterestAccrued/4?month=0&year=2023
 }
 
 ```
+### Jobs to calculate Interest accrued
+
+- DailyInterestAccrualJob - daily job to calculate Interest accrued for the day
+- MonthlyInterestAccrualJob - monthly job to calculate Interest accrued for the month and add it to the principal
+
+### Architecture Diagram
+
+![architectue](https://user-images.githubusercontent.com/66232824/224425313-3c1d38f5-640a-4c51-b66a-81a8a9586c7b.png)
 
 
-### Architecture
+### Database design
 
-![Architecture](https://drive.google.com/file/d/1hsmdYgSQdsyN4zPpo6bI29_Kq5aftEEb/preview)
+![database_banking](https://user-images.githubusercontent.com/66232824/224425388-8b42b684-5c0d-4f26-830b-6fb8e4e52d5f.png)
 
