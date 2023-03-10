@@ -1,4 +1,3 @@
-import { now } from 'sequelize/types/utils';
 import { AccountModel } from "../models/AccountModel";
 import AccountHistoryService from "./AccountHistoryService";
 import AccountInterestService from './AccountInterestService';
@@ -54,11 +53,11 @@ class AccountService {
         // get total accruted interests for the month
         return await AccountInterestService.getTotalInterestAccruedForMonth(account.dataValues.id, month, year);
       } else {
-        return 0;
+        throw new Error("Invalid user")
       }
     } catch (e) {
       console.log(e)
-      return false;
+      throw e;
     }
   }
 

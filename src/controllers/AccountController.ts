@@ -19,11 +19,19 @@ class AccountController {
 
   async getInterestAccrued(req: Request, res: Response) {
     try {
-     const interestAccrued = await AccountService.getInterestAccrued(parseInt(req.params.userId));
+    let interestAccrued: number = 0;
+
+    if (req.query.month && req.query.year) {
+      interestAccrued = await AccountService.
+          getInterestAccrued(parseInt(req.params.userId), parseInt(req.query.month.toString()), parseInt(req.query.year.toString()));
+    } else {
+      interestAccrued = await AccountService.getInterestAccrued(parseInt(req.params.userId));
+    }
+     
       return res.json({ interestAccrued: interestAccrued, msg: 'success' })
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
-      return res.json({ msg: 'error' })
+      return res.json({ msg: e.message })
     }
   }
 
