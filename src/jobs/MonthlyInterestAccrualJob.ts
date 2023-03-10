@@ -1,7 +1,7 @@
 import AccountInterestService from "../services/AccountInterestService";
 import AccountService from "../services/AccountService";
 
-class DailyInterestAccrualJob {
+class MonthlyInterestAccrualJob {
 
   /*
     sample code, not tested
