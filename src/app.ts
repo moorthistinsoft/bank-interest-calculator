@@ -1,3 +1,5 @@
+import * as dotenv from 'dotenv'
+dotenv.config()
 import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import interestRoute from './routes/Interest';
@@ -5,6 +7,8 @@ import accountRoute from './routes/AccountRoute'
 import db from './config/database.config'
 
 const app = express();
+
+console.log('ENV: ' + process.env);
 
 app.use(express.json());
 

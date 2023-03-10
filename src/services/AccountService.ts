@@ -7,6 +7,11 @@ class AccountService {
   constructor() {
   }
 
+  /*
+  Create new account for user
+  Assume user already created and exists
+  @param: account: any - Account details
+  */
   async create(account: any) {
     const accountFromDB: AccountModel = await AccountModel.create(account);
 
@@ -20,12 +25,26 @@ class AccountService {
     return accountFromDB;
   }
 
+  async get(account_id: number) {
+    return await AccountModel.findByPk(account_id);
+  }
+
+  async getAll() {
+    return await AccountModel.findAll();
+  }
+
+  /*
+  Get Accrued interests for given month
+   @param: userId
+   @param: month to calculate interest Accured
+   @param: year to calculate interest Accured
+  */
   async getInterestAccrued(userId: number, monthFromParam?: number, yearFromParam?: number) {
     try {
       const account: AccountModel | null = await AccountModel.findOne({ where: { userId: userId } });
       const now = new Date();
-      const month = monthFromParam ? monthFromParam : now.getMonth();
-      const year =  yearFromParam ? yearFromParam : now.getFullYear();
+      const month = monthFromParam != null ? monthFromParam : now.getMonth();
+      const year = yearFromParam != null ? yearFromParam : now.getFullYear();
 
       if (account) {
         // In real time, daily job runs at night and calculates and creates the AccountInterest for the day
@@ -43,24 +62,34 @@ class AccountService {
     }
   }
 
-  async deposit(userId: number, ammount: number) {
-
-    // consider we have one account for user at this moment
-
+  /*
+  Consider we have one account for user at this moment
+  Deposit to bank account
+  @param: userId - user to deposit amount
+  @param: amount: amount to deposit
+  */
+  async deposit(userId: number, ammount: number, type: string = 'DEPOSIT') {
     const account: AccountModel | null = await AccountModel.findOne({ where: { userId: userId } });
 
     if (account) {
-      account.currentBalance = account.dataValues.currentBalance + ammount;
-      account.updatedAt = new Date();
-      await account.save();
+      const newBalance = account.dataValues.currentBalance + ammount;
+      await account.update({
+        currentBalance: newBalance,
+        updatedAt: new Date(),
+      });
 
-      await AccountHistoryService.create(account.id, ammount, account.currentBalance, 'DEPOSIT');
+      await AccountHistoryService.create(account.dataValues.id, ammount, newBalance, type);
     }
 
     return true;
   }
 
-  // consider we have one account for user at this moment
+  /*
+ // consider we have one account for user at this moment
+ Withdraw from bank account
+ @param: userId - user to withdraw amount
+ @param: amount: amount to withdraw
+ */
   async withdraw(userId: number, ammount: number) {
 
     const account: AccountModel | null = await AccountModel.findOne({ where: { userId: userId } });
@@ -72,9 +101,10 @@ class AccountService {
         throw new Error("Invalid operation");
       }
 
-      account.currentBalance = newBalance;
-      account.updatedAt = new Date();
-      await account.save();
+      await account.update({
+        currentBalance: newBalance,
+        updatedAt: new Date(),
+      });
 
       await AccountHistoryService.create(account.dataValues.id, ammount, newBalance, 'WITHDRAW');
     }

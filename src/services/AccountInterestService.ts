@@ -1,17 +1,28 @@
-import { Op, Sequelize } from "sequelize";
+import { Op } from "sequelize";
 import { AccountInterestModel } from "../models/AccountInterestModel";
 import { AccountModel } from "../models/AccountModel";
 import AccountHistoryService from "./AccountHistoryService";
 
+/*
+Ideal of AccountInterestService, daily instrest will be calcuated and save using DailyInterestAccrualJob
+for report purpose for APIs we get read from AccountInterestService and display
+*/
 class AccountInterestService {
   constructor() {
   }
 
-  // 
+  /*
+  Create's one accountInterest for the given account for a day
+  @param: accountInterest - accountInterest values (interest AccuredFor a day)
+ */
   async create(accountInterest: any) {
     return await AccountInterestModel.create(accountInterest);
   }
 
+  /*
+  calculate interest and Create's one accountInterest for the given account for a day
+  @param: accountInterest - accountInterest values (interest AccuredFor a day)
+ */
   async createInterestAccrued(accountInterest: any) {
 
     const balanceByDate = await AccountHistoryService.getCurrentBalanceByDate(accountInterest.accountId, accountInterest.accruedDate);
@@ -26,6 +37,12 @@ class AccountInterestService {
     });
   }
 
+  /*
+  Total Interest accrued for the month and year
+  @param: accountId - user's account id
+  @param: month to calculate interest Accured
+  @param: year to calculate interest Accured
+*/
   async getTotalInterestAccruedForMonth(accoutId: number, month: number, year: number) {
     const dailyInterestsAccrued = await this.getDailyInterestAccrued(accoutId, month, year);
 
@@ -38,8 +55,14 @@ class AccountInterestService {
     return totalInterests;
   }
 
+  /*
+  All Interest accrued for the month one record for each day
+  @param: accountId - user's account id
+  @param: month to calculate interest Accured
+  @param: year to calculate interest Accured
+*/
   async getDailyInterestAccrued(accountId: number, month: number,
-    year: number): Promise<AccountInterestModel[]>  {
+    year: number): Promise<AccountInterestModel[]> {
 
     const currentDate = new Date();
     let firstDayToAccrueInterest = new Date(year, month, 1);
@@ -63,6 +86,12 @@ class AccountInterestService {
     return result;
   }
 
+  /*
+  Create missing interest accrued
+  @param: account - user's account
+  @param: month to calculate interest Accured
+  @param: year to calculate interest Accured
+*/
   async createDailyInterestAccrued(
     account: AccountModel,
     month: number,
@@ -94,8 +123,8 @@ class AccountInterestService {
         interestRate: account.currentInterestRate,
         accruedDate: dayToAccureInterest
       });
-      console.log(dayToAccureInterest);
-      dayToAccureInterest.setDate(dayToAccureInterest.getDate() + 1)
+      dayToAccureInterest.setDate(dayToAccureInterest.getDate() + 1);
+      dayToAccureInterest.setHours(0, 0, 0, 0);
     }
 
     return true;
