@@ -92,3 +92,9 @@ http://localhost:3000/api/account/getInterestAccrued/4?month=0&year=2023
 }
 
 ```
+
+
+### Architecture
+
+![Architecture](https://drive.google.com/file/d/1hsmdYgSQdsyN4zPpo6bI29_Kq5aftEEb/preview)
+
